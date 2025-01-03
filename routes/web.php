@@ -7,7 +7,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Middleware\IsLogin;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [UserController::class, 'redirectLogin']);
+Route::get('/', [AuthController::class, 'loginView'])->name('login');
 // Route::post('/', [UserController::class, 'login']);
 
 Route::get('/login', [AuthController::class, 'loginView'])->name('login');

@@ -8,13 +8,13 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-gH2yIJqKdNHPEq0n4Mqa/HGKIhSkIHeL5AyhkYV8i59U5AR6csBvApHHNl/vI1Bx" crossorigin="anonymous">
 <title>Laporan Persediaan Harian Komponen Plastik</title>
-    <div class="col-sm-6">
-        <h1>Laporan Persediaan Harian Komponen Plastik</h1>
+    <div class="col-sm-7">
+        <h1 class="text-[#0078C8]">Laporan Persediaan Harian Komponen Plastik</h1>
     </div>
 @endsection
 
 @section('content')
-<div class="container mt-5">
+<div class="container">
     <div class="card">
         <div class="card-body">
             <form method="POST" action="{{ route('laporan.simpan') }}">
@@ -45,7 +45,7 @@
                 @else
                     <p>No data available for komponenPlastik.</p>
                 @endif
-                <button type="submit" class="btn btn-primary">Simpan</button>
+                <button type="submit" class="btn" style="background-color: #0078C8; color: white;">Simpan</button>
             </form>
         </div>
     </div>

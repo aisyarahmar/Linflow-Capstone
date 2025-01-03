@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -7,7 +6,7 @@ use App\Models\Komponen;
 use Illuminate\Support\Facades\DB;
 
 class DashboardController extends Controller
-{   
+{
     public function productPrediction()
     {
         $requiredComponents = [
@@ -53,43 +52,120 @@ class DashboardController extends Controller
             ->select('komponens.nama', 'stok_komponens.stok')
             ->get();
 
-        $minProducts = PHP_INT_MAX; // Inisialisasi dengan nilai maksimum
+        $minProducts = PHP_INT_MAX; // Initialize with the maximum value
 
         foreach ($requiredComponents as $komponen => $jumlahDibutuhkan) {
-            $stok = $stokKomponens->firstWhere('nama', $komponen)?->stok ?? 0; // Stok komponen atau 0 jika tidak ditemukan
+            $stok = $stokKomponens->firstWhere('nama', $komponen)?->stok ?? 0; // Stock or 0 if not found
             $maxProductsByKomponen = intdiv($stok, $jumlahDibutuhkan);
             $minProducts = min($minProducts, $maxProductsByKomponen);
         }
 
         return $minProducts;
     }
-    
-    public function dashboard(Request $request)
-{
-    $sortOrder = $request->query('sort', 'asc'); // Default sort order is ascending
 
-    $komponenPlastik = DB::table('stok_komponens')
+    public function dashboard(Request $request)
+    {
+        // Get 'bagian' query parameter, default to 'Logam' if not present
+        $bagian = $request->query('bagian', 'Logam');
+        $sortBy = $request->query('sort', 'jumlah');  // Default to sorting by 'jumlah'
+
+
+        // Fetch data for selected 'bagian'
+        $komponenPlastik = DB::table('stok_komponens')
         ->join('komponens', 'stok_komponens.id_komponen', '=', 'komponens.id')
         ->where('komponens.bagian', 'Plastik')
-        ->orderBy('stok_komponens.stok', 'asc')
         ->select('komponens.id', 'komponens.nama', 'stok_komponens.stok as jumlah')
+        ->orderBy($sortBy, 'asc') // Sort based on the 'sort' parameter (jumlah or id)
         ->get();
 
-    $komponenLogam = DB::table('stok_komponens')
+        $komponenLogam = DB::table('stok_komponens')
         ->join('komponens', 'stok_komponens.id_komponen', '=', 'komponens.id')
         ->where('komponens.bagian', 'Logam')
-        ->orderBy('stok_komponens.stok', 'asc')
         ->select('komponens.id', 'komponens.nama', 'stok_komponens.stok as jumlah')
+        ->orderBy($sortBy, 'asc') // Sort based on the 'sort' parameter (jumlah or id)
         ->get();
+    
 
-    $jumlahProduk = $this->productPrediction(); // Hitung prediksi produk
+        $jumlahProduk = $this->productPrediction(); // Calculate product prediction
 
-    return view('layouts.components.pages.dashboard.index', [
-        "komponenPlastik" => $komponenPlastik,
-        "komponenLogam" => $komponenLogam,
-        "sortOrder" => $sortOrder,
-        "jumlahProduk" => $jumlahProduk, // Kirim jumlah produk ke view
-    ]);
-}
+        // Conditionally fetch logam or plastik data for the chart
+        $chartData = [];
+        $stokData = [];
+        if ($bagian === 'Logam') {
+            // Logam Data Query
+            $logamData = DB::table('detail_laporans')
+            ->join('stok_komponens', 'detail_laporans.id_stok_komponen', '=', 'stok_komponens.id')
+            ->join('komponens', function($join) {
+                $join->on('stok_komponens.id_komponen', '=', 'komponens.id')
+                     ->where('komponens.bagian', '=', 'Logam');
+            })
+            ->join('laporan_harians', function($join) {
+                $join->on('detail_laporans.id_laporan_harian', '=', 'laporan_harians.id')
+                     ->where('laporan_harians.bagian', '=', 'Logam');
+            })
+            ->select(
+                'komponens.nama as komponen',
+                DB::raw('MAX(detail_laporans.stok_akhir) as stok_akhir')
+            )
+            ->groupBy('komponens.nama', 'komponens.id')  // Include komponen.id in the GROUP BY clause
+            ->orderBy($sortBy === 'jumlah' ? 'stok_akhir' : 'komponens.id', $sortBy === 'jumlah' ? 'desc' : 'asc')
+            ->get();        
+        
+            $chartData = [
+                'categories' => $logamData->pluck('komponen')->toArray(),
+                'values' => $logamData->pluck('stok_akhir')->toArray(),
+            ];
+        
+            // Get Logam stok data for the table
+            $stokData = DB::table('stok_komponens')
+                ->join('komponens', 'stok_komponens.id_komponen', '=', 'komponens.id')
+                ->where('komponens.bagian', 'Logam')
+                ->select('komponens.nama', 'stok_komponens.stok')
+                ->get();
+        
+        } elseif ($bagian === 'Plastik') {
+            // Plastik Data Query
+            $plastikData = DB::table('detail_laporans')
+            ->join('stok_komponens', 'detail_laporans.id_stok_komponen', '=', 'stok_komponens.id')
+            ->join('komponens', function($join) {
+                $join->on('stok_komponens.id_komponen', '=', 'komponens.id')
+                     ->where('komponens.bagian', '=', 'Plastik');
+            })
+            ->join('laporan_harians', function($join) {
+                $join->on('detail_laporans.id_laporan_harian', '=', 'laporan_harians.id')
+                     ->where('laporan_harians.bagian', '=', 'Plastik');
+            })
+            ->select(
+                'komponens.nama as komponen',
+                DB::raw('MAX(detail_laporans.stok_akhir) as stok_akhir')
+            )
+            ->groupBy('komponens.nama', 'komponens.id')  // Include komponen.id in the GROUP BY clause
+            ->orderBy($sortBy === 'jumlah' ? 'stok_akhir' : 'komponens.id', $sortBy === 'jumlah' ? 'desc' : 'asc')
+            ->get();
+        
+        
+            $chartData = [
+                'categories' => $plastikData->pluck('komponen')->toArray(),
+                'values' => $plastikData->pluck('stok_akhir')->toArray(),
+            ];
+        
+            // Get Plastik stok data for the table
+            $stokData = DB::table('stok_komponens')
+                ->join('komponens', 'stok_komponens.id_komponen', '=', 'komponens.id')
+                ->where('komponens.bagian', 'Plastik')
+                ->select('komponens.nama', 'stok_komponens.stok')
+                ->get();
+        }
+        
 
+        return view('layouts.components.pages.dashboard.index', [
+            "komponenPlastik" => $komponenPlastik,
+            "komponenLogam" => $komponenLogam,
+            "bagian" => $bagian,  // Pass 'bagian' so it can be used in the view
+            "jumlahProduk" => $jumlahProduk,
+            "chartData" => $chartData,
+            "stokData" => $stokData,  
+        ]);
+        
+    }
 }

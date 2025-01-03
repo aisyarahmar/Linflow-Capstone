@@ -6,6 +6,12 @@
         </li>
     </ul>
 
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <h3 href="" class="nav-link text-black">Sistem Bahan Baku</h3>
+        </li>
+    </ul>
+
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
         <li class="nav-item dropdown">

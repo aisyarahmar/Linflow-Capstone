@@ -26,13 +26,13 @@
     </style>
 </head>
 
-<body class="bg-light" style="height: 100vh;">
+<body style="height: 100vh; background-color: #CCE4F4;">
     <div class="container d-flex justify-content-center align-items-center" style="height: 100vh;">
         <div class="card login-card">
             <div class="card-body">
                 <!-- Logo -->
                 <img src="images/LogoPerusahaanTeksSamping.png" alt="Logo" class="logo">
-                <h3 class="text-center mt-3">Login Sistem Bahan Baku</h3>
+                <h3 class="text-center mt-3" style="color: #0078C8;">Login Sistem Bahan Baku</h3>
 
                 @if($errors->any())
                     <div class="alert alert-danger">
@@ -55,7 +55,7 @@
                         <input type="password" class="form-control" id="password" name="password" required>
                     </div>
                     <div class="mb-3 d-grid">
-                        <button name="submit" type="submit" class="btn btn-primary">Login</button>
+                        <button name="submit" type="submit" class="btn" style="background-color: #0078C8; color: white;">Login</button>
                     </div>
                 </form>
             </div>

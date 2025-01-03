@@ -3,63 +3,89 @@
 @section('header')
 <div class="row mb-2">
     <div class="col-sm-6">
-        <h1>Laporan Persediaan Harian Komponen</h1>
-    </div>
-
-    <div class="col-sm-6">
-        <ol class="breadcrumb float-sm-right">
-            <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
-            <li class="breadcrumb-item active">Laporan</li>
-        </ol>
+        <h1 class="text-[#0078C8]">Laporan Persediaan Harian Komponen</h1>
     </div>
 
     <div class="container mt-3">
         <div class="form-group">
-            <label>Buat Laporan Persediaan</label>
+            
+            <div class="card -mx-2">
+                <div class="card-body">
+                    <label class="text-[#0078C8]">Buat Laporan Persediaan</label>
             <!-- Dropdown pilihan bengkel -->
-            <select class="form-control select2 select2-danger" data-dropdown-css-class="select2-danger" style="width: 100%;" onchange="window.location.href=this.value;">
-                <option value="" selected disabled>Pilih Bagian</option>
-                <option value="{{ url('laporan/formPlastik?bagian=Plastik') }}">Plastik</option>
-                <option value="{{ url('laporan/formLogam?bagian=Logam') }}">Logam</option>
-                <option value="{{ url('laporan/create/perakitan?bagian=Perakitan') }}">Perakitan</option>
-            </select>
+            <select class="form-control" data-dropdown-css-class="select2-danger" style="background-color: #0078C8; width: 100%; color: white;" onchange="window.location.href=this.value;">
+                <option class="bg-white" value="" selected disabled>Pilih Bagian</option>
+                <option class="bg-white" value="{{ url('laporan/formPlastik?bagian=Plastik') }}">Plastik</option>
+                <option class="bg-white" value="{{ url('laporan/formLogam?bagian=Logam') }}">Logam</option>
+                {{-- <option value="{{ url('laporan/create/perakitan?bagian=Perakitan') }}">Perakitan</option> --}}
+            </select></div></div>
         </div>
     </div>
 </div>
 @endsection
 
 @section('content')
-<div class="card mt-4">
+<div class="card -my-3">
     <div class="card-body">
-        <h4>Data Laporan Persediaan Harian</h4>
+        <h4 class="text-[#0078C8]">Data Laporan Persediaan Harian</h4>
         <!-- Search and Filter Form -->
         <form method="GET" action="{{ route('laporan') }}" class="mb-3">
-            <div class="row">
-                <div class="col-md-4">
-                    <input type="text" name="user_name" class="form-control" placeholder="Search by user" value="{{ request('user_name') }}">
+            <div class="row align-items-end">
+                <!-- Search by User -->
+                <div class="col-md-3">
+                    <input 
+                        type="text" 
+                        name="user_name" 
+                        class="form-control" 
+                        placeholder="Search by user" 
+                        value="{{ request('user_name') }}">
                 </div>
-                <div class="col-md-4">
-                    <input type="text" name="bagian" class="form-control" placeholder="Search by bagian" value="{{ request('bagian') }}">
+                
+                <!-- Search by Bagian -->
+                <div class="col-md-3">
+                    <input 
+                        type="text" 
+                        name="bagian" 
+                        class="form-control" 
+                        placeholder="Search by bagian" 
+                        value="{{ request('bagian') }}">
                 </div>
+                
+                <!-- Date Range -->
                 <div class="col-md-4">
                     <div class="input-group">
-                        <input type="date" name="start_date" class="form-control" value="{{ request('start_date') }}">
-                        <input type="date" name="end_date" class="form-control" value="{{ request('end_date') }}">
+                        <input 
+                            type="date" 
+                            name="start_date" 
+                            class="form-control" 
+                            value="{{ request('start_date') }}">
+                        <input 
+                            type="date" 
+                            name="end_date" 
+                            class="form-control" 
+                            value="{{ request('end_date') }}">
                     </div>
                 </div>
-            </div>
-            <div class="row mt-3">
-                <div class="col-md-12 text-right">
-                    <button type="submit" class="btn btn-primary">Search</button>
+                
+                <!-- Buttons -->
+                <div class="col-md-2 text-right">
+                    <button 
+                        type="submit" 
+                        class="btn" 
+                        style="background-color: #0078C8; color: white;">
+                        Search
+                    </button>
                     <a href="{{ route('laporan') }}" class="btn btn-secondary">Clear</a>
                 </div>
             </div>
         </form>
+        
+        
 
-        <table class="table table-bordered">
+        <table class="table table-striped table-bordered custom">
             <thead>
                 <tr>
-                    <th>ID</th>
+                    <th>No.</th>
                     <th>User</th>
                     <th>Bagian Laporan</th>
                     <th>Waktu</th>
@@ -69,12 +95,12 @@
             <tbody>
                 @foreach ($laporanHarians as $laporan)
                     <tr>
-                        <td>{{ $laporan->id }}</td>
+                        <td>{{ $loop->iteration }}</td>
                         <td>{{ $laporan->user }}</td>
                         <td>{{ $laporan->bagian }}</td>
                         <td>{{ $laporan->created_at }}</td>
                         <td>
-                            <a href="{{ route('laporan.view', $laporan->id) }}" class="btn btn-primary">View</a>
+                            <a href="{{ route('laporan.view', $laporan->id) }}" class="btn" style="background-color: #0078C8; color: white;">View</a>
                         </td>
                     </tr>
                 @endforeach

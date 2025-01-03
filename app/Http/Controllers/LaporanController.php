@@ -70,11 +70,12 @@ class LaporanController extends Controller
             ->where('detail_laporans.id_laporan_harian', $id)
             ->select('komponens.nama as nama_komponen', 'detail_laporans.stok_awal', 'detail_laporans.stok_masuk', 'detail_laporans.stok_keluar', 'detail_laporans.stok_akhir')
             ->get();
-
+        
         return view('layouts.components.pages.laporan.viewLaporan', [
             'laporanHarian' => $laporanHarian,
             'detailLaporans' => $detailLaporans
         ]);
+        
     }
 
     public function export($id)

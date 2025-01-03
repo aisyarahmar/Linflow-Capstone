@@ -115,7 +115,7 @@
                                         <td>{{ $item->jumlah }}</td>
                                         <td>
                                             @if ($item->jumlah < 600)
-                                                <i class="fas fa-circle" style="color: yellow; vertical-align: middle;"></i>
+                                                <i class="fas fa-circle" style="color: orange; vertical-align: middle;"></i>
                                             @else
                                                 <i class="fas fa-circle" style="color: green; vertical-align: middle;"></i>
                                             @endif
@@ -130,7 +130,7 @@
                                         <td>{{ $item->jumlah }}</td>
                                         <td>
                                             @if ($item->jumlah < 600)
-                                                <i class="fas fa-circle" style="color: yellow; vertical-align: middle;"></i>
+                                                <i class="fas fa-circle" style="color: orange; vertical-align: middle;"></i>
                                             @else
                                                 <i class="fas fa-circle" style="color: green; vertical-align: middle;"></i>
                                             @endif
